@@ -1,7 +1,15 @@
 from collections import Counter
 from random import choice, randint, random
 
-words = open("google-10000-english.txt").read().splitlines()
+words = []
+
+paths = [
+	"google-10000-english.txt",
+	"english-adjectives.txt"
+]
+
+for path in paths:
+	words += open(path).read().splitlines()
 
 print(len(words))
 
@@ -38,14 +46,14 @@ def list_union(l1, l2):
 	return result
 
 words = [word.lower() for word in words if len(word)>3]
-#words.extend("a in i".split())
+words.extend("a in i the".split())
 
 def find_anagram(name):
 	target = name.replace(" ", "").lower()
 	sortedtarget = sorted(target)
 	cover = []
 	scover = []
-	attempts = 10
+	attempts = 5
 	attempt = 0
 	while scover != sortedtarget:
 		delta = list_difference(target, scover)
@@ -73,7 +81,7 @@ def find_anagram(name):
 			if letters > 0:
 				c[word] = letters
 
-		mostcommon = c.most_common(20)
+		mostcommon = c.most_common(50)
 		#print(mostcommon)
 		if len(mostcommon) == 0:
 			attempts += 1
@@ -100,16 +108,14 @@ def find_name(anagram):
 import sys
 if __name__ == "__main__":
 
-	if False:
-		for celebrity in celebrities:#[:100]:
-			cover = find_anagram(celebrity)
-			if cover:
-				print(celebrity, cover)
-
-
 	if len(sys.argv) > 1:
 		inp = " ".join(sys.argv[2:])
 		if sys.argv[1] == "find_name":
 			find_name(inp)
 		else:
 			print(find_anagram(inp))
+	else:
+		for celebrity in celebrities:#[:100]:
+			cover = find_anagram(celebrity)
+			if cover:
+				print(celebrity, cover)
