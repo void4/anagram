@@ -5,7 +5,10 @@ words = []
 
 paths = [
 	"google-10000-english.txt",
-	"english-adjectives.txt"
+	"english-adjectives.txt",
+	"gerund.txt",
+	"verbs.txt",
+	"verbs-participle.txt",
 ]
 
 for path in paths:
@@ -45,15 +48,19 @@ def list_union(l1, l2):
 
 	return result
 
-words = [word.lower() for word in words if len(word)>3]
-words.extend("a in i the".split())
-
-def find_anagram(name):
+words = [word.lower() for word in words if len(word)>=4]
+words.extend("a an or in i the".split())
+for w in "res und fur der ref usr def mrna mtv mls lbs les mel mlb lat rev hrs eur nhs href sur ser usd gen gif cdna".split():
+	try:
+		words.remove(w)
+	except ValueError:
+		pass
+def find_anagram(name, attempts=5):
 	target = name.replace(" ", "").lower()
 	sortedtarget = sorted(target)
 	cover = []
 	scover = []
-	attempts = 5
+
 	attempt = 0
 	while scover != sortedtarget:
 		delta = list_difference(target, scover)
@@ -81,7 +88,7 @@ def find_anagram(name):
 			if letters > 0:
 				c[word] = letters
 
-		mostcommon = c.most_common(50)
+		mostcommon = c.most_common(10)
 		#print(mostcommon)
 		if len(mostcommon) == 0:
 			attempts += 1
@@ -105,15 +112,34 @@ def find_name(anagram):
 			print("FOUND", celebrity)
 			return celebrity
 
+
+def sortlowerjoin(l):
+	return sorted("".join(l).lower())
+
 import sys
+from itertools import permutations
 if __name__ == "__main__":
 
 	if len(sys.argv) > 1:
 		inp = " ".join(sys.argv[2:])
 		if sys.argv[1] == "find_name":
 			find_name(inp)
+		elif sys.argv[1] == "find_anagram":
+			print(find_anagram(inp, attempts=1000))
+		elif sys.argv[1] == "permute":
+			for perm in permutations("".join(sys.argv[2:])):
+				print(perm)
+		elif sys.argv[1] == "compare":
+			split = sys.argv[2:].index("^")
+			print(sortlowerjoin(sys.argv[2:2+split]) == sortlowerjoin(sys.argv[2+split+1:]))
+		elif sys.argv[1] == "sort":
+			print(sortlowerjoin(sys.argv[2:]))
+		elif sys.argv[1] == "subtract":
+			split = sys.argv[2:].index("^")
+			print(list_difference(sortlowerjoin(sys.argv[2:2+split]), sortlowerjoin(sys.argv[2+split+1:])))		
 		else:
-			print(find_anagram(inp))
+			raise Exception("Invalid argument")
+
 	else:
 		for celebrity in celebrities:#[:100]:
 			cover = find_anagram(celebrity)
